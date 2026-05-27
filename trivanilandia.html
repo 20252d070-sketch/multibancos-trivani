@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creador de Váuchers Premium - 80mm</title>
+    <style>
+        /* --- CONFIGURACIÓN DE IMPRESIÓN REQUERIDA --- */
+        @page {
+            size: 80mm auto;
+            margin: 0;
+        }
+
+        /* --- ESTILOS GENERALES (RESET & INTERFAZ DE USUARIO) --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #cad4ec; 
+            color: #898e97;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 40px;
+            min-height: 100vh;
+            perspective: 1200px; 
+        }
+
+        /* --- APARTADO IZQUIERDA: AGENTES MULTIBANCOS (MANTIENE EFECTO 3D LLAMATIVO) --- */
+        #apartado-izquierda {
+            background: #ef4444; 
+            border: 1px solid #dc2626;
+            padding: 40px 24px;
+            width: 380px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: sticky;
+            top: 40px;
+            transform-style: preserve-3d;
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease;
+        }
+
+        #apartado-izquierda:hover {
+            transform: translateY(-8px) rotateX(4deg) rotateY(-4deg);
+            box-shadow: 0 25px 40px -10px rgba(239, 68, 68, 0.5), 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .lateral-logo {
+            width: 130px;
+            height: 130px;
+            margin-bottom: 24px;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+            transform: translateZ(30px);
+            transition: transform 0.4s ease;
+        }
+        
+        #apartado-izquierda:hover .lateral-logo {
+            transform: translateZ(50px) scale(1.05);
+        }
+
+        .lateral-titulo {
+            color: #ffffff; 
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            font-size: 36px;
+            font-weight: 900;
+            line-height: 1.1;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transform: translateZ(20px);
+        }
+
+        /* --- PANEL DE EDICIÓN FLOTANTE (SEGUNDO CUADRO - AHORA TOTALMENTE FIJO) --- */
+        #panel-controles {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid #e2e8f0;
+            padding: 24px;
+            width: 350px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15);
+            position: sticky;
+            top: 40px;
+            color: #2d3748; 
+            /* Se eliminaron las transformaciones e inclinaciones 3D al hacer hover */
+        }
+
+        .panel-titulo {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #1a202c;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-group {
+            margin-bottom: 18px;
+            background: #f7fafc;
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid #edf2f7;
+        }
+
+        .control-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .control-group input[type="text"] {
+            width: 100%;
+            padding: 8px 12px;
+            font-size: 14px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            background: #fff;
+            color: #2d3748;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .slider-container span {
+            font-size: 11px;
+            color: #718096;
+            min-width: 85px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .control-group input[type="range"] {
+            flex: 1;
+            accent-color: #3182ce;
+            cursor: pointer;
+        }
+
+        #btn-reaparecer {
+            width: 100%;
+            background: #4a5568;
+            color: white;
+            border: none;
+            padding: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            transition: transform 0.1s ease, background 0.2s;
+        }
+
+        #btn-reaparecer:active {
+            transform: scale(0.96);
+        }
+
+        #btn-imprimir {
+            width: 100%;
+            background: #2b6cb0;
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px -1px rgba(43, 108, 176, 0.2);
+            transition: transform 0.1s ease, background 0.2s;
+        }
+
+        #btn-imprimir:active {
+            transform: scale(0.96);
+        }
+
+        .tip-box {
+            font-size: 11px;
+            color: #718096;
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+
+        /* --- DISEÑO DEL VÁUCHER DE 80MM (TICKET FISICO) --- */
+        #ticket-wrapper {
+            background: white;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15);
+            border-radius: 4px;
+            padding: 4px;
+            position: sticky;
+            top: 40px;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        #ticket-wrapper:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 25px 35px -5px rgba(0,0,0,0.25);
+        }
+
+        .ticket-body {
+            width: 72mm;
+            min-height: 480px;
+            background-color: #fff;
+            color: #000;
+            padding: 25px 12px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #v-logo-marca {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 15px;
+            font-weight: 800;
+            color: #111;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 2px dashed #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        #v-diamante-svg {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            opacity: 1;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        #v-diamante-svg.esfumado {
+            opacity: 0 !important;
+            transform: scale(0.3);
+            pointer-events: none;
+        }
+
+        #v-texto1 {
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1.4;
+            word-wrap: break-word;
+            white-space: pre-line;
+        }
+
+        .divider {
+            border-top: 1px dashed #000;
+            margin: 16px 0;
+            width: 100%;
+        }
+
+        #v-texto2 {
+            font-size: 42px;
+            font-weight: 800;
+            line-height: 1.1;
+            margin: 12px 0;
+            padding: 14px 4px;
+            border: 2px dashed #000;
+            border-left: none;
+            border-right: none;
+            word-wrap: break-word;
+            letter-spacing: -0.5px;
+        }
+
+        #v-texto3 {
+            font-size: 12px;
+            font-weight: 500;
+            line-height: 1.4;
+            word-wrap: break-word;
+            color: #333;
+        }
+
+        /* --- MEDIAS QUERIES ESTRICTAS PARA IMPRESIÓN --- */
+        @media print {
+            body {
+                background: #fff;
+                padding: 0;
+                margin: 0;
+                justify-content: flex-start;
+                align-items: flex-start;
+                perspective: none;
+            }
+            #panel-controles, #ticket-wrapper, #apartado-izquierda {
+                box-shadow: none;
+                border-radius: 0;
+                transform: none !important;
+            }
+            #panel-controles, #apartado-izquierda {
+                display: none !important;
+            }
+            .ticket-body {
+                padding: 10px 0;
+            }
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            #v-diamante-svg.esfumado {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- APARTADO DE MARCA (IZQUIERDA - CON INTERACCIÓN 3D) -->
+    <div id="apartado-izquierda">
+        <svg class="lateral-logo" viewBox="0 0 24 24" fill="none" xmlns="http://w3.org">
+            <path d="M6 2L2 8L12 22L22 8L18 2H6Z" fill="#ffffff" stroke="#ffffff" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 8H22" stroke="#ef4444" stroke-width="1.2"/>
+            <path d="M12 22L7.5 8" stroke="#ef4444" stroke-width="1.2"/>
+            <path d="M12 22L16.5 8" stroke="#ef4444" stroke-width="1.2"/>
+            <path d="M6 2L12 8L18 2" stroke="#ef4444" stroke-width="1.2"/>
+        </svg>
+        <div class="lateral-titulo">Agentes Multibancos Trivani</div>
+    </div>
+
+    <!-- PANEL DE CONTROL FLOTANTE (CENTRO - COMPLETAMENTE FIJO) -->
+    <div id="panel-controles">
+        <div class="panel-titulo">⚙️ Editor de Váucher</div>
+        
+        <div class="control-group">
+            <label>Interacción del Logo:</label>
+            <button id="btn-reaparecer" onclick="reaparecerDiamante()">✨ Reaparecer Diamante</button>
+            <div class="tip-box">💡 ¡El diamante ya está al lado del texto! Tócalo directamente en el ticket y verás cómo **se esfuma**.</div>
+        </div>
+
+        <div class="control-group">
+            <label>Encabezado / Datos:</label>
+            <input type="text" id="in-t1" value="YAPE NOMBRE: FRANCISCA">
+            <div class="slider-container">
+                <span id="lbl-s1">Letra: 14px</span>
+                <input type="range" id="sl-s1" min="10" max="30" value="14">
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <label>Monto / Código Central:</label>
+            <input type="text" id="in-t2" value="930274712">
+            <div class="slider-container">
+                <span id="lbl-s2">Letra: 42px</span>
+                <input type="range" id="sl-s2" min="20" max="100" value="42">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label>Pie de Página / Notas:</label>
+            <input type="text" id="in-t3" value="¡Gracias por su preferencia!">
+            <div class="slider-container">
+                <span id="lbl-s3">Letra: 12px</span>
+                <input type="range" id="sl-s3" min="8" max="25" value="12">
+            </div>
+        </div>
+
+        <button id="btn-imprimir" onclick="window.print()">🖨️ Mandar a Imprimir</button>
+    </div>
+
+    <!-- CONTENEDOR VISUAL DEL TICKET (DERECHA) -->
+    <div id="ticket-wrapper">
+        <div class="ticket-body">
+            
+            <div id="v-logo-marca">
+                <svg id="v-diamante-svg" viewBox="0 0 24 24" fill="none" xmlns="http://w3.org">
+                    <path d="M6 2L2 8L12 22L22 8L18 2H6Z" fill="#000000" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 8H22" stroke="#ffffff" stroke-width="1.5"/>
+                    <path d="M12 22L7.5 8" stroke="#ffffff" stroke-width="1.5"/>
+                    <path d="M12 22L16.5 8" stroke="#ffffff" stroke-width="1.5"/>
+                    <path d="M6 2L12 8L18 2" stroke="#ffffff" stroke-width="1.5"/>
+                </svg>
+                <span>TRIVANI MULTIBANCOS</span>
+            </div>
+
+            <div id="v-texto1">YAPE NOMBRE: FRANCISCA</div>
+            <div class="divider"></div>
+            <div id="v-texto2">930274712</div>
+            <div class="divider"></div>
+            <div id="v-texto3">¡Gracias por su preferencia!</div>
+            
+        </div>
+    </div>
+
+    <!-- LOGICA DE ACTUALIZACIÓN DINÁMICA -->
+    <script>
+        const mapeoControles = [
+            { input: 'in-t1', slider: 'sl-s1', target: 'v-texto1', label: 'lbl-s1', prefix: 'Letra: ' },
+            { input: 'in-t2', slider: 'sl-s2', target: 'v-texto2', label: 'lbl-s2', prefix: 'Letra: ' },
+            { input: 'in-t3', slider: 'sl-s3', target: 'v-texto3', label: 'lbl-s3', prefix: 'Letra: ' }
+        ];
+
+        mapeoControles.forEach(item => {
+            const elInput = document.getElementById(item.input);
+            const elSlider = document.getElementById(item.slider);
+            const elTarget = document.getElementById(item.target);
+            const elLabel = document.getElementById(item.label);
+
+            elInput.addEventListener('input', () => elTarget.textContent = elInput.value);
+            elSlider.addEventListener('input', () => {
+                elTarget.style.fontSize = elSlider.value + 'px';
+                elLabel.textContent = item.prefix + elSlider.value + 'px';
+            });
+        });
+
+        const diamante = document.getElementById('v-diamante-svg');
+
+        function esfumarDiamante() {
+            diamante.classList.add('esfumado');
+        }
+
+        function reaparecerDiamante() {
+            diamante.classList.remove('esfumado');
+        }
+
+        diamante.addEventListener('click', esfumarDiamante);
+        diamante.addEventListener('touchstart', esfumarDiamante);
+    </script>
+
+</body>
+</html>
